@@ -1,0 +1,4 @@
+#! /bin/sh
+
+rm -rfv events previews *.pyc .DS_Store site.log
+

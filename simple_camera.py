@@ -1,0 +1,126 @@
+#!/usr/bin/env python
+from __future__ import division, print_function
+
+# AsterPi v0 copyright (c) 2013, 2014 Lars Rosengreen
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+
+import copy
+import datetime
+import multiprocessing
+import os
+import StringIO
+import subprocess
+import sys
+import time
+
+import numpy
+
+from PIL import Image
+
+
+_current_directory = os.path.dirname(os.path.abspath(__file__))
+_event_directory =  _current_directory + "/events"
+_preview_directory = _current_directory + "/previews"
+_image_width = 2592
+_image_height = 1944
+_preview_width = _image_width // 3
+_preview_heigh = _image_height // 3
+_heartbeat = 100
+_darkness_cutoff = 4000000
+_darkness_sleeptime = 30 # time in minutes
+
+
+class RPiCamera:
+    def __init__(self, image_size=(_image_width, _image_height)):
+        self.image_size = image_size
+        self.image_counter = 0
+        self.start_time = datetime.datetime.now()
+
+    def take_picture(self):
+        command = "raspistill -n -mm average -w {} -h {} -ISO 200 -q 100 -t 1000 -e bmp -o -".format(self.image_size[0], self.image_size[1])
+        image_data = StringIO.StringIO()
+        image_data.write(subprocess.check_output(command, shell=True))
+        image_data.seek(0)
+        image = Image.open(image_data)
+        image.load()
+        image_data.close()
+        timestamp = datetime.datetime.now()
+        self.image_counter += 1
+        return (image, timestamp)
+
+
+
+def brightness(image):
+    m = numpy.asarray(image)
+    return numpy.sum(m)
+
+
+def save_image(image, image_counter, timestamp):
+    outfile = "{:05d}_{}.jpg".format(image_counter, 
+                timestamp.strftime("%Y%b%d_%H%M%S"))
+    preview = image.resize((_preview_width,_preview_heigh))
+    preview.save(os.path.join(_preview_directory, outfile))
+    image.save(os.path.join(_event_directory, outfile), quality=90)
+
+
+def free_space():
+    "Free disk space in gigabytes."
+    s = os.statvfs('/')
+    return (s.f_bavail * s.f_frsize) / 1.0e9
+
+
+def run(pipe=None):
+    if not os.path.exists(_event_directory):
+        os.makedirs(_event_directory)
+    if not os.path.exists(_preview_directory):
+        os.makedirs(_preview_directory)
+
+    Camera = RPiCamera()
+
+    too_dark = False
+
+    image, timestamp = Camera.take_picture()
+
+    while True:
+        running_time = str(timestamp - Camera.start_time).split('.')[0]
+        print("\rtime: {} images: {}".format(running_time, Camera.image_counter), end="")
+        sys.stdout.flush()
+
+        if Camera.image_counter % _heartbeat == 0 or too_dark:
+            light_level = brightness(image)
+            if light_level < _darkness_cutoff:
+                too_dark = True
+                print(" * too dark, sleeping for {} minutes".format(_darkness_sleeptime), end="")
+                sys.stdout.flush()
+                time.sleep(_darkness_sleeptime * 60)
+            else:
+                too_dark = False
+                print(" *", end="")
+                sys.stdout.flush()
+            if free_space() < 0.5:
+                print("\n\n**** quitting: no disk space ****\n\n")
+                break
+
+        save_process = multiprocessing.Process(target=save_image, args=(copy.copy(image), Camera.image_counter, timestamp))
+        save_process.start()
+        image, timestamp = Camera.take_picture()
+        save_process.join()
+
+        print("\r{:78}".format(""), end="\r")
+
+
+if __name__ == "__main__":
+    run()
