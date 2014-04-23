@@ -27,6 +27,7 @@ import sys
 import time
 
 import numpy
+import picamera
 
 from PIL import Image
 
@@ -57,6 +58,27 @@ class RPiCamera:
         image = Image.open(image_data)
         image.load()
         image_data.close()
+        timestamp = datetime.datetime.now()
+        self.image_counter += 1
+        return (image, timestamp)
+
+class RPiCamera2:
+    # For use with picamera
+    def __init__(self, image_size=(_image_width, _image_height)):
+        self.image_size = image_size
+        self.image_counter = 0
+        self.start_time = datetime.datetime.now()
+
+    def take_picture(self):
+        # Create the in-memory stream
+        stream = io.BytesIO()
+        with picamera.PiCamera() as camera:
+            camera.start_preview()
+            time.sleep(2)
+            camera.capture(stream, format='jpeg')
+        # "Rewind" the stream to the beginning so we can read its content
+        stream.seek(0)
+        image = Image.open(stream)
         timestamp = datetime.datetime.now()
         self.image_counter += 1
         return (image, timestamp)
