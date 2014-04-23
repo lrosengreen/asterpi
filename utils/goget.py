@@ -1,3 +1,9 @@
+# Pull image files (in their typical nested directories) from off of a GoPro
+# sensibly rename them, and place them in a single directory. 
+
+# ==> Watch out, weird things can happen if you have many thousand files in a 
+#     single directory. 
+
 import os, sys, shutil
 
 filesToMove = []
