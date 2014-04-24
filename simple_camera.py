@@ -45,26 +45,8 @@ _darkness_cutoff = 40000000
 _darkness_sleeptime = 10 # time in minutes
 
 
+
 class RPiCamera:
-    def __init__(self, image_size=(_image_width, _image_height)):
-        self.image_size = image_size
-        self.image_counter = 0
-        self.start_time = datetime.datetime.now()
-
-    def take_picture(self):
-        command = "raspistill -n -mm average -w {} -h {} -ISO 200 -q 100 -t 1000 -e bmp -o -".format(self.image_size[0], self.image_size[1])
-        image_data = StringIO.StringIO()
-        image_data.write(subprocess.check_output(command, shell=True))
-        image_data.seek(0)
-        image = Image.open(image_data)
-        image.load()
-        image_data.close()
-        timestamp = datetime.datetime.now()
-        self.image_counter += 1
-        return (image, timestamp)
-
-class RPiCamera2:
-    # For use with picamera
     def __init__(self, image_size=(_image_width, _image_height)):
         self.image_size = image_size
         self.image_counter = 0
@@ -114,7 +96,7 @@ def run(pipe=None):
     if not os.path.exists(_preview_directory):
         os.makedirs(_preview_directory)
 
-    Camera = RPiCamera2()
+    Camera = RPiCamera()
 
     too_dark = False
 
