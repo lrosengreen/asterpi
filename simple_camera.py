@@ -19,6 +19,7 @@ from __future__ import division, print_function
 
 import copy
 import datetime
+import io
 import multiprocessing
 import os
 import StringIO
@@ -39,9 +40,9 @@ _image_width = 2592
 _image_height = 1944
 _preview_width = _image_width // 3
 _preview_heigh = _image_height // 3
-_heartbeat = 100
-_darkness_cutoff = 4000000
-_darkness_sleeptime = 30 # time in minutes
+_heartbeat = 10
+_darkness_cutoff = 40000000
+_darkness_sleeptime = 10 # time in minutes
 
 
 class RPiCamera:
@@ -73,6 +74,9 @@ class RPiCamera2:
         # Create the in-memory stream
         stream = io.BytesIO()
         with picamera.PiCamera() as camera:
+            camera.resolution = self.image_size
+            camera.meter_mode = 'average'
+            camera.ISO = 200
             camera.start_preview()
             time.sleep(2)
             camera.capture(stream, format='jpeg')
@@ -110,7 +114,7 @@ def run(pipe=None):
     if not os.path.exists(_preview_directory):
         os.makedirs(_preview_directory)
 
-    Camera = RPiCamera()
+    Camera = RPiCamera2()
 
     too_dark = False
 
@@ -125,7 +129,7 @@ def run(pipe=None):
             light_level = brightness(image)
             if light_level < _darkness_cutoff:
                 too_dark = True
-                print(" * too dark, sleeping for {} minutes".format(_darkness_sleeptime), end="")
+                print(" * too dark ({}), sleeping for {} minutes".format(light_level, _darkness_sleeptime), end="")
                 sys.stdout.flush()
                 time.sleep(_darkness_sleeptime * 60)
             else:
