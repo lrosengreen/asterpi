@@ -23,7 +23,6 @@ import io
 import multiprocessing
 import os
 import random
-import StringIO
 import subprocess
 import sys
 import time
