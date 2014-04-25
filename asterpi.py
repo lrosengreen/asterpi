@@ -17,9 +17,9 @@ from __future__ import division, print_function
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 
-from multiprocessing import Process, Pipe
+from multiprocessing import Process
 
-import motion_camera
+import simple_camera
 import simple_server
 
 
@@ -31,9 +31,8 @@ __version__ = "0"
 
 if __name__ == "__main__":
     print("AsterPi v{}".format(__version__))
-    pipe1, pipe2 = Pipe()
-    p_camera = Process(target=motion_camera.run, args=(pipe1,))
-    p_server = Process(target=simple_server.run, args=(pipe2,))
+    p_camera = Process(target=simple_camera.run)
+    p_server = Process(target=simple_server.run)
     p_camera.start()
     p_server.start()
     p_camera.join()

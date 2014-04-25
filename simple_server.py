@@ -83,7 +83,7 @@ cherrypy.tree.mount(
     )
 
 
-def run(pipe=None, testing=False):
+def run(testing=False):
     # Set up site-wide config first so we get a log if errors occur.
     cherrypy.config.update({'environment': 'production',
             'log.error_file': 'site.log',

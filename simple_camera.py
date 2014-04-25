@@ -28,7 +28,8 @@ import sys
 import time
 
 import numpy
-import picamera
+
+#import picamera
 
 from PIL import Image
 
@@ -70,6 +71,18 @@ class RPiCamera:
         return (image, timestamp)
 
 
+class DummyCamera:
+    def __init__(self, image_size=(_image_width, _image_height)):
+        self.image_size = image_size
+        self.image_counter = 0
+        self.start_time = datetime.datetime.now()
+
+    def take_picture(self):
+        image = Image.new('RGB', self.image_size)
+        timestamp = datetime.datetime.now()
+        self.image_counter += 1
+        return (image, timestamp)
+
 
 def brightness(image):
     m = numpy.asarray(image)
@@ -90,13 +103,14 @@ def free_space():
     return (s.f_bavail * s.f_frsize) / 1.0e9
 
 
-def run(pipe=None):
+def run(testing=False):
     if not os.path.exists(_event_directory):
         os.makedirs(_event_directory)
     if not os.path.exists(_preview_directory):
         os.makedirs(_preview_directory)
 
-    Camera = RPiCamera()
+    #Camera = RPiCamera()
+    Camera = DummyCamera()
 
     too_dark = False
 
@@ -131,4 +145,4 @@ def run(pipe=None):
 
 
 if __name__ == "__main__":
-    run()
+    run(testing=True)
