@@ -125,7 +125,7 @@ def run(testing=False):
             light_level = brightness(image)
             if light_level < _darkness_cutoff:
                 too_dark = True
-                print(" * too dark ({}), sleeping for {} minutes".format(light_level, _darkness_sleeptime), end="")
+                print(" * too dark ({}); sleeping for {} minutes".format(light_level, _darkness_sleeptime), end="")
                 sys.stdout.flush()
                 time.sleep(_darkness_sleeptime * 60)
             else:

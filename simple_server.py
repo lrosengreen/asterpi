@@ -46,16 +46,6 @@ class Root:
 
 
 # API
-class CameraStatus:
-    exposed = True
-    def GET(self):
-        return json.dumps("unknown")
-
-cherrypy.tree.mount(CameraStatus(),
-                    '/api/camerastatus',
-                    {'/': {'request.dispatch': cherrypy.dispatch.MethodDispatcher()}})
-
-
 
 class FreeSpace:
     exposed = True

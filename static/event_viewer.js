@@ -24,18 +24,6 @@ function getEventFilenames() {
     return(response);
 }
 
-function getCameraStatus() {
-    var url = "/api/camerastatus";
-    var client = new XMLHttpRequest();
-    client.open("GET", url, false);
-    client.setRequestHeader("Content-Type", "text/plain");
-    client.send();
-    var response = 0;
-    if (client.status == 200) {
-        response = JSON.parse(client.responseText);
-    }
-    return(response);
-}
 
 var imageFiles = getEventFilenames();
 var imageIndexMin = 0;
