@@ -71,13 +71,68 @@ class RPiCamera:
         return (image, timestamp)
 
 
+
+class RPiCamera2:
+    def __init__(self, image_size=(_image_width, _image_height)):
+        self.image_size = image_size
+        self.image_counter = 0
+        self.start_time = datetime.datetime.now()
+        # set up the camera (with initial values, run preview, etc.)
+        self.camera = self.start()
+
+
+    def start(self):
+        camera = piCamera.camera()
+        camera.resolution = self.image_size
+        camera.meter_mode = 'average'
+        camera.ISO = 200
+        # Need to "warm up" the camera for a few seconds before starting to take any picutres 
+        # to ensure that it has an accurate exposure reading.
+        camera.start_preview()
+        time.sleep(10)
+        self.running = True
+        return camera
+
+
+    def stop(self):
+        # When the camera isn't going to be used for a while, turn it off to save power.
+        # (for example when it's too dark outside)
+        self.camera.stop_preview()
+        self.camera.close()
+        self.running = False
+
+
+    def take_picture(self):
+        if not self.running: self.start()
+        # Create the in-memory stream
+        stream = io.BytesIO()
+        camera.capture(stream, format='jpeg')
+        # "Rewind" the stream to the beginning so we can read its content
+        stream.seek(0)
+        image = Image.open(stream)
+        timestamp = datetime.datetime.now()
+        self.image_counter += 1
+        return (image, timestamp)
+
+
+
 class DummyCamera:
     def __init__(self, image_size=(_image_width, _image_height)):
         self.image_size = image_size
         self.image_counter = 0
         self.start_time = datetime.datetime.now()
+        self.running = False
+
+    def start(self):
+        self.running = True
+        time.sleep(10)
+
+    def stop(self):
+        self.running = False
 
     def take_picture(self):
+        # start up the camera if it is not currently running
+        if not self.running: self.start()
         color = (random.randint(0,255), random.randint(0,255), random.randint(0,255))
         image = Image.new('RGB', self.image_size, color)
         timestamp = datetime.datetime.now()
@@ -127,6 +182,7 @@ def run(testing=False):
             light_level = brightness(image)
             if light_level < _darkness_cutoff:
                 too_dark = True
+                Camera.stop()
                 print(" * too dark ({}); sleeping for {} minutes".format(light_level, _darkness_sleeptime), end="")
                 sys.stdout.flush()
                 time.sleep(_darkness_sleeptime * 60)
