@@ -22,6 +22,7 @@ import datetime
 import io
 import multiprocessing
 import os
+import random
 import StringIO
 import subprocess
 import sys
@@ -78,9 +79,11 @@ class DummyCamera:
         self.start_time = datetime.datetime.now()
 
     def take_picture(self):
-        image = Image.new('RGB', self.image_size)
+        color = (random.randint(0,255), random.randint(0,255), random.randint(0,255))
+        image = Image.new('RGB', self.image_size, color)
         timestamp = datetime.datetime.now()
         self.image_counter += 1
+        time.sleep(2)
         return (image, timestamp)
 
 
