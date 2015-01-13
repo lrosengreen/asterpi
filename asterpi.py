@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 from __future__ import division, print_function
 
-# AsterPi v0 copyright (c) 2013, 2014 Lars Rosengreen
+# AsterPi v0 copyright (c) 2013-2015 Lars Rosengreen
 
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by

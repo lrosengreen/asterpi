@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 from __future__ import division, print_function
 
-# AsterPi v0 copyright (c) 2013, 2014 Lars Rosengreen
+# AsterPi v0 copyright (c) 2013-2015 Lars Rosengreen
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -145,7 +145,7 @@ def brightness(image):
 
 
 def save_image(image, image_counter, timestamp):
-    outfile = "{:05d}_{}.jpg".format(image_counter, 
+    outfile = "{:05d}_{}.jpg".format(image_counter,
                 timestamp.strftime("%Y%b%d_%H%M%S"))
     preview = image.resize((_preview_width,_preview_heigh))
     preview.save(os.path.join(_preview_directory, outfile))
@@ -164,9 +164,9 @@ def run():
 
     event_counter = 0
     too_dark = False
-    
+
     background_queue, image_queue = warm_up(BACKGROUND_QUEUE_SIZE, IMAGE_QUEUE_SIZE)
-    
+
     # main run loop
     while True:
         im = camera.take_picture()
@@ -199,7 +199,7 @@ def run():
                 too_dark = False
         background_queue.append(m)
 
-    
+
 
 if __name__ == "__main__":
     run()

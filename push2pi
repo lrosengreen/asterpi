@@ -1,3 +1,3 @@
 #! /bin/sh
 
-scp -r ../asterpi asterpi.local:/home/lars/
+scp -r ../asterpi poppy.local:/home/lars/

@@ -29,7 +29,7 @@ import time
 
 import numpy
 
-#import picamera
+import picamera
 
 from PIL import Image
 
@@ -166,8 +166,8 @@ def run(testing=False):
     if not os.path.exists(_preview_directory):
         os.makedirs(_preview_directory)
 
-    #Camera = RPiCamera()
-    Camera = DummyCamera()
+    Camera = RPiCamera()
+    #Camera = DummyCamera()
 
     too_dark = False
 

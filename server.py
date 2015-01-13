@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 from __future__ import division, print_function
 
-# AsterPi v0 copyright (c) 2013, 2014 Lars Rosengreen
+# AsterPi v0 copyright (c) 2013-2015 Lars Rosengreen
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -30,7 +30,7 @@ def getImageFiles(root_dir):
         imageFiles = os.listdir(root_dir)
         imageFiles.sort()
         return imageFiles
-    
+
 
 def getModificationTime(filename):
     t = os.path.getmtime(filename)
@@ -85,14 +85,14 @@ def run_server(testing=False):
             '/static': {'tools.staticdir.on': True,
                     'tools.staticdir.dir': os.path.join(current_dir, 'static')}}
     cherrypy.server.socket_host = '::'
-    
+
     cherrypy.tree.mount(
         FreeSpace(), '/api/freespace',
         {'/':
             {'request.dispatch': cherrypy.dispatch.MethodDispatcher()}
         }
     )
-    
+
     if testing == True:
         cherrypy.engine.autoreload.subscribe()
         cherrypy.config.update({'log.screen': True})
