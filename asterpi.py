@@ -19,7 +19,7 @@ from __future__ import division, print_function
 
 from multiprocessing import Process
 
-import simple_camera
+import simple_camera2
 import simple_server
 
 
@@ -31,7 +31,7 @@ __version__ = "0"
 
 if __name__ == "__main__":
     print("AsterPi v{}".format(__version__))
-    p_camera = Process(target=simple_camera.run)
+    p_camera = Process(target=simple_camera2.run)
     p_server = Process(target=simple_server.run)
     p_camera.start()
     p_server.start()

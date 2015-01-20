@@ -1,24 +1,24 @@
-a:link 
+a:link
 { text-decoration: none;
   color: black;
   background-color: white }
 
-a:visited 
+a:visited
 { text-decoration: none;
-  color: black; 
+  color: black;
   background-color: white }
 
-a:hover 
-{ text-decoration: underline; 
-  color: red; 
-  background-color: white }
-        
-a:active 
+a:hover
 { text-decoration: underline;
-  color: red; 
+  color: red;
   background-color: white }
 
-p 
+a:active
+{ text-decoration: underline;
+  color: red;
+  background-color: white }
+
+p
 { margin-top: 4px;
   font-size: 14pt; }
 
@@ -30,6 +30,7 @@ h1
   margin-bottom: 4px; }
 
 #credits
-{ text-align:right;
+{ margin-top: 50px;
+  text-align:right;
   font-size: 9pt;
-} 
+}

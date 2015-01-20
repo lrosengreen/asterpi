@@ -32,7 +32,7 @@ var imageIndex = imageIndexMax;
 
 function changeImage(i) {
     document.getElementById("piclink").href="/events/"+imageFiles[i];
-    document.getElementById("previewpic").src="/previews/"+imageFiles[i];
+    document.getElementById("previewpic").src="/events/"+imageFiles[i];
     document.getElementById("dllink").href="/events/"+imageFiles[i];
     document.getElementById("dllink").download=imageFiles[i];
     document.getElementById("dllink").innerHTML=imageFiles[i];

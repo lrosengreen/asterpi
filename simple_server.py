@@ -62,7 +62,7 @@ cherrypy.tree.mount(FreeSpace(),
 class EventFilenames:
     exposed = True
     def GET(self):
-        image_files = getImageFiles("events")
+        image_files = getImageFiles("pictures")
         return json.dumps(image_files)
 
 cherrypy.tree.mount(
@@ -79,12 +79,11 @@ def run(testing=False):
             'log.error_file': 'site.log',
             'log.screen': False})
     conf = {'/events': {'tools.staticdir.on': True,
-                    'tools.staticdir.dir': os.path.join(current_dir, 'events')},
-            '/previews': {'tools.staticdir.on': True,
-                    'tools.staticdir.dir': os.path.join(current_dir, 'previews')},
+                    'tools.staticdir.dir': os.path.join(current_dir, 'pictures')},
             '/static': {'tools.staticdir.on': True,
                     'tools.staticdir.dir': os.path.join(current_dir, 'static')}}
-    cherrypy.server.socket_host = '::'
+    cherrypy.server.socket_host = '0.0.0.0'
+    #cherrypy.server.socket_host = '::'
 
 
     if testing == True:

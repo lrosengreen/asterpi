@@ -1,4 +1,3 @@
 #! /bin/sh
 
-rm -rfv events previews *.pyc .DS_Store site.log
-
+rm -rfv previews movies *.pyc *.h264 .DS_Store site.log

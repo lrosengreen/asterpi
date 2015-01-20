@@ -82,11 +82,12 @@ class RPiCamera2:
 
 
     def start(self):
-        camera = piCamera.camera()
+        camera = picamera.PiCamera()
         camera.resolution = self.image_size
         camera.meter_mode = 'average'
         camera.ISO = 200
-        # Need to "warm up" the camera for a few seconds before starting to take any picutres 
+        camera.vflip = True
+        # Need to "warm up" the camera for a few seconds before starting to take any picutres
         # to ensure that it has an accurate exposure reading.
         camera.start_preview()
         time.sleep(10)
@@ -106,7 +107,7 @@ class RPiCamera2:
         if not self.running: self.start()
         # Create the in-memory stream
         stream = io.BytesIO()
-        camera.capture(stream, format='jpeg')
+        self.camera.capture(stream, format='jpeg')
         # "Rewind" the stream to the beginning so we can read its content
         stream.seek(0)
         image = Image.open(stream)
@@ -147,7 +148,7 @@ def brightness(image):
 
 
 def save_image(image, image_counter, timestamp):
-    outfile = "{:05d}_{}.jpg".format(image_counter, 
+    outfile = "{:05d}_{}.jpg".format(image_counter,
                 timestamp.strftime("%Y%b%d_%H%M%S"))
     preview = image.resize((_preview_width,_preview_heigh))
     preview.save(os.path.join(_preview_directory, outfile))
@@ -166,7 +167,7 @@ def run(testing=False):
     if not os.path.exists(_preview_directory):
         os.makedirs(_preview_directory)
 
-    Camera = RPiCamera()
+    Camera = RPiCamera2()
     #Camera = DummyCamera()
 
     too_dark = False
