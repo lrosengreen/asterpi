@@ -10,7 +10,7 @@ import picamera
 
 
 _current_directory = os.path.dirname(os.path.abspath(__file__))
-_picture_directory =  _current_directory + "/pictures"
+_preview_directory =  "/mnt/ramdisk/previews"
 _movie_directory = _current_directory + "/movies"
 _start_time = datetime.datetime.now()
 
@@ -22,11 +22,11 @@ def free_space():
 
 
 def run():
-    if not os.path.exists(_picture_directory):
-        os.makedirs(_picture_directory)
+    if not os.path.exists(_preview_directory):
+        os.makedirs(_preview_directory)
     if not os.path.exists(_movie_directory):
         os.makedirs(_movie_directory)
-    counter = 0
+    counter = 1
     with picamera.PiCamera() as camera:
         camera.resolution = (1920, 1080)
         camera.vflip = True
@@ -40,13 +40,12 @@ def run():
             while free_space() > 1:
                 camera.wait_recording(10)
                 timestamp = datetime.datetime.now()
-                camera.capture(os.path.join(_picture_directory,
-                        "{:05d} {}.jpg".format(counter, timestamp.strftime("%Y%b%d %H:%M:%S").lower())),
+                camera.capture(os.path.join(_preview_directory, "preview.jpg"),
                     resize=(960,540),
                     quality=40,
                     use_video_port=True)
                 print("\r{:78}".format(""), end="\r")
-                print("\rrunning:{} pictures:{}".format(str(timestamp - start_time).split(".")[0], counter), end="")
+                print("\rrunning:{} previews:{}".format(str(timestamp - start_time).split(".")[0], counter), end="")
                 sys.stdout.flush()
                 counter = counter + 1
 
