@@ -36,18 +36,18 @@ def run():
         try:
             start_time = datetime.datetime.now()
             camera.start_recording(os.path.join(_movie_directory,
-                "{}.h264".format(start_time.strftime("%Y%b%d %H:%M:%S").lower())))
-            while free_space() > 1:
-                camera.wait_recording(10)
+                "{}.h264".format(start_time.strftime("%Y%b%d_%H-%M-%S").lower())))
+            while free_space() > 0.5:
                 timestamp = datetime.datetime.now()
                 camera.capture(os.path.join(_preview_directory, "preview.jpg"),
                     resize=(960,540),
-                    quality=40,
+                    quality=30,
                     use_video_port=True)
                 print("\r{:78}".format(""), end="\r")
                 print("\rrunning:{} previews:{}".format(str(timestamp - start_time).split(".")[0], counter), end="")
                 sys.stdout.flush()
-                counter = counter + 1
+                counter += 1
+                camera.wait_recording(5)
 
         finally:
             camera.stop_recording()
