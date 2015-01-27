@@ -16,9 +16,7 @@ _current_directory = os.path.dirname(os.path.abspath(__file__))
 _preview_directory =  "/mnt/ramdisk/previews"
 _picture_directory = _current_directory + "/pictures"
 _start_time = datetime.datetime.now()
-_timelapse_interval = 3 # how long to wait between taking pictures (in seconds)
-
-
+_timelapse_interval = 2 # how long to wait between taking pictures (in seconds)
 
 
 def free_space():
@@ -43,20 +41,26 @@ def run():
         next_time = start_time
         try:
             timestamp = datetime.datetime.now()
-            while free_space > 0.5:
-                next_time = next_time + datetime.timedelta(seconds=_timelapse_interval)
-                fname = os.path.join(_picture_directory, "{:06d}.jpg".format(counter))
-                camera.capture(fname)
-                if counter % 10 == 0:
-                    shutil.copy(fname, os.path.join(_preview_directory, "preview.jpg"))
-                wait_time = next_time - datetime.datetime.now()
-                wait_time = wait_time.seconds + wait_time.microseconds * 1e-6
-                print("time:{} images:{} wait:{}s".format(str(timestamp - start_time).split(".")[0], counter, wait_time))
-                if wait_time > _timelapse_interval: # happens when it takes too long to get picture
-                    wait_time = 0
-                time.sleep(wait_time)
-                counter += 1
+            while free_space() > 0.5:
                 timestamp = datetime.datetime.now()
+                next_time = next_time + datetime.timedelta(seconds=_timelapse_interval)
+                fname = os.path.join(_picture_directory, "{:06d} {}.jpg".format(counter, timestamp.strftime("%Y%b%d %Hh%Mm%Ss")))
+                camera.capture(fname)
+                if counter % 20 == 0:
+                    shutil.copy(fname, os.path.join(_preview_directory, "preview.jpg"))
+                # figure out how long to wait before taking next picture
+                if datetime.datetime.now() <= next_time:
+                    wait_time = next_time - datetime.datetime.now()
+                    wait_time = wait_time.seconds + wait_time.microseconds * 1e-6
+                else:
+                    # It could be that the time to take next picture has already passed.
+                    # In that case, wait time should be negative and value passed to
+                    # time.sleep() should be 0.
+                    wait_time = datetime.datetime.now() - next_time
+                    wait_time = -1 * (wait_time.seconds + wait_time.microseconds * 1e-6)
+                print("time:{} images:{} wait:{}s".format(str(timestamp - start_time).split(".")[0], counter, wait_time))
+                time.sleep(0 if wait_time < 0 else wait_time)
+                counter += 1
         finally:
                 camera.stop_preview()
                 camera.close()
