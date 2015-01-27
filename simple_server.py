@@ -28,17 +28,6 @@ from cherrypy.lib.static import serve_file
 current_dir = os.path.dirname(os.path.abspath(__file__))
 
 
-def getImageFiles(root_dir):
-        imageFiles = os.listdir(root_dir)
-        imageFiles.sort()
-        return imageFiles
-
-
-def getModificationTime(filename):
-    t = os.path.getmtime(filename)
-    return datetime.datetime.fromtimestamp(t)
-
-
 class Root:
     @cherrypy.expose
     def index(self):
@@ -59,19 +48,6 @@ cherrypy.tree.mount(FreeSpace(),
                     {'/': {'request.dispatch': cherrypy.dispatch.MethodDispatcher()}})
 
 
-class EventFilenames:
-    exposed = True
-    def GET(self):
-        image_files = getImageFiles("/mnt/ramdisk/previews")
-        return json.dumps(image_files)
-
-cherrypy.tree.mount(
-        EventFilenames(), '/api/eventfilenames',
-        {'/':
-            {'request.dispatch': cherrypy.dispatch.MethodDispatcher()}
-        }
-    )
-
 
 def run(testing=False):
     # Set up site-wide config first so we get a log if errors occur.
@@ -83,7 +59,7 @@ def run(testing=False):
             '/static': {'tools.staticdir.on': True,
                     'tools.staticdir.dir': os.path.join(current_dir, 'static')}}
     cherrypy.server.socket_host = '0.0.0.0'
-    #cherrypy.server.socket_host = '::'
+    #cherrypy.server.socket_host = '::' # for Mac (uses IPV6)
 
 
     if testing == True:
