@@ -35,6 +35,7 @@ def run():
         camera.resolution = (2592, 1944) #2592, 1944
         camera.vflip = True
         camera.hflip = True
+        camera.annotate_background = True
         camera.start_preview()
         time.sleep(5)
         start_time = datetime.datetime.now()
@@ -45,6 +46,7 @@ def run():
                 timestamp = datetime.datetime.now()
                 next_time = next_time + datetime.timedelta(seconds=_timelapse_interval)
                 fname = os.path.join(_picture_directory, "{:06d} {}.jpg".format(counter, timestamp.strftime("%Y%b%d %Hh%Mm%Ss")))
+                camera.annotate_text = timestamp.strftime("%Y%b%d %H:%M:%S").lower()
                 camera.capture(fname)
                 if counter % 20 == 0:
                     shutil.copy(fname, os.path.join(_preview_directory, "preview.jpg"))
