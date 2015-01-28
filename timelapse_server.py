@@ -20,6 +20,7 @@ from __future__ import division, print_function
 import json
 import os
 import os.path
+import socket
 
 import cherrypy
 from cherrypy.lib.static import serve_file
@@ -31,7 +32,7 @@ current_dir = os.path.dirname(os.path.abspath(__file__))
 class Root:
     @cherrypy.expose
     def index(self):
-        return serve_file(os.path.join(current_dir,"static/event_viewer.html"))
+        return serve_file(os.path.join(current_dir,"static/viewer.html"))
 
 
 # API
@@ -48,13 +49,25 @@ cherrypy.tree.mount(FreeSpace(),
                     {'/': {'request.dispatch': cherrypy.dispatch.MethodDispatcher()}})
 
 
+class Hostname:
+    exposed = True
+    def GET(self):
+        hostname = socket.gethostname()
+        return json.dumps(hostname)
+
+cherrypy.tree.mount(Hostname(),
+                    '/api/hostname',
+                    {'/': {'request.dispatch': cherrypy.dispatch.MethodDispatcher()}})
+
+
+
 
 def run(testing=False):
     # Set up site-wide config first so we get a log if errors occur.
     cherrypy.config.update({'environment': 'production',
             'log.error_file': 'site.log',
             'log.screen': False})
-    conf = {'/events': {'tools.staticdir.on': True,
+    conf = {'/previews': {'tools.staticdir.on': True,
                     'tools.staticdir.dir': '/mnt/ramdisk/previews'},
             '/static': {'tools.staticdir.on': True,
                     'tools.staticdir.dir': os.path.join(current_dir, 'static')}}

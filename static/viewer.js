@@ -34,8 +34,8 @@ function refresh() {
 }
 
 
-document.getElementById("title").innerHTML = "Simple Camera Viewer (" + getHostname() + ")"
-
+document.getElementById("title").innerHTML = "Simple Viewfinder (" + getHostname() + ")"
+document.getElementById("heading").innerHTML = "Simple Viewfinder (" + getHostname() + ")"
 
 var refreshInterval = setInterval( "refresh()", 10 * 1000);
 
