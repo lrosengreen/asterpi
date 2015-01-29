@@ -32,7 +32,7 @@ current_dir = os.path.dirname(os.path.abspath(__file__))
 class Root:
     @cherrypy.expose
     def index(self):
-        return serve_file(os.path.join(current_dir,"static/viewer.html"))
+        return serve_file(os.path.join(current_dir,"timelapse_static/viewer.html"))
 
 
 # API
@@ -70,7 +70,7 @@ def run(testing=False):
     conf = {'/previews': {'tools.staticdir.on': True,
                     'tools.staticdir.dir': '/mnt/ramdisk/previews'},
             '/static': {'tools.staticdir.on': True,
-                    'tools.staticdir.dir': os.path.join(current_dir, 'static')}}
+                    'tools.staticdir.dir': os.path.join(current_dir, 'timelapse_static')}}
     cherrypy.server.socket_host = '0.0.0.0'
     #cherrypy.server.socket_host = '::' # for Mac (uses IPV6)
 
