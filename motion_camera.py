@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 from __future__ import division, print_function
 
-# AsterPi v0 copyright (c) 2013, 2014 Lars Rosengreen
+# AsterPi v0 copyright (c) 2013-2015 Lars Rosengreen
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -53,8 +53,8 @@ class Picture:
 
 
 class RPiCamera:
-    def __init__(self, image_width = _image_width, image_height = _image_height):
-        self.image_width = image_width
+    def __init__(self, image_size = (_image_width, _image_height)):
+        self.image_size = image_size
         self.image_height = image_height
         self.image_counter = 0
         self.start_time = datetime.datetime.now()
@@ -72,6 +72,31 @@ class RPiCamera:
         self.image_counter += 1
         return picture
 
+class DummyCamera:
+    def __init__(self, image_size=(_image_width, _image_height)):
+        self.image_size = image_size
+        self.image_counter = 0
+        self.start_time = datetime.datetime.now()
+        self.running = False
+
+    def start(self):
+        self.running = True
+        time.sleep(10)
+
+    def stop(self):
+        self.running = False
+
+    def take_picture(self):
+        # start up the camera if it is not currently running
+        if not self.running: self.start()
+        color = (random.randint(0,255), random.randint(0,255), random.randint(0,255))
+        image = Image.new('RGB', self.image_size, color)
+        timestamp = datetime.datetime.now()
+        self.image_counter += 1
+        time.sleep(2)
+        return (image, timestamp)
+
+
 
 
 def brightness(picture):
@@ -80,7 +105,7 @@ def brightness(picture):
 
 
 def save_picture(picture, counter):
-    outfile = "{:05d}_{}.jpg".format(counter, 
+    outfile = "{:05d}_{}.jpg".format(counter,
                 picture.timestamp.strftime("%Y%b%d_%H%M%S"))
     image = picture.image
     preview = image.resize((_preview_width,_preview_heigh))
@@ -121,7 +146,7 @@ def run(queue=None):
         report_status("time: {} images: {}".format(running_time, Camera.image_counter), queue)
         save_picture(picture, Camera.image_counter)
 
-        
+
 
 
 if __name__ == "__main__":

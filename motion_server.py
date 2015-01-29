@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 from __future__ import division, print_function
 
-# AsterPi v0 copyright (c) 2013, 2014 Lars Rosengreen
+# AsterPi v0 copyright (c) 2013-2015 Lars Rosengreen
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -32,7 +32,7 @@ def getImageFiles(root_dir):
         imageFiles = os.listdir(root_dir)
         imageFiles.sort()
         return imageFiles
-    
+
 
 def getModificationTime(filename):
     t = os.path.getmtime(filename)
@@ -42,7 +42,7 @@ def getModificationTime(filename):
 class Root:
     @cherrypy.expose
     def index(self):
-        return serve_file(os.path.join(current_dir,"static/event_viewer.html"))
+        return serve_file(os.path.join(current_dir,"motion_static/event_viewer.html"))
 
 
 # API
@@ -84,11 +84,11 @@ def run(queue=None, testing=True):
                     '/api/camerastatus',
                     {'/': {'request.dispatch': cherrypy.dispatch.MethodDispatcher()}})
 
-    cherrypy.tree.mount(FreeSpace(), 
+    cherrypy.tree.mount(FreeSpace(),
                     '/api/freespace',
                     {'/': {'request.dispatch': cherrypy.dispatch.MethodDispatcher()}})
 
-    cherrypy.tree.mount(EventFilenames(), 
+    cherrypy.tree.mount(EventFilenames(),
                     '/api/eventfilenames',
                     {'/': {'request.dispatch': cherrypy.dispatch.MethodDispatcher()}})
 
@@ -101,14 +101,14 @@ def run(queue=None, testing=True):
             '/previews': {'tools.staticdir.on': True,
                     'tools.staticdir.dir': os.path.join(current_dir, 'previews')},
             '/static': {'tools.staticdir.on': True,
-                    'tools.staticdir.dir': os.path.join(current_dir, 'static')}}
+                    'tools.staticdir.dir': os.path.join(current_dir, 'motion_static')}}
     cherrypy.server.socket_host = '::'
-    
-    
+
+
     if testing == True:
         cherrypy.engine.autoreload.subscribe()
         cherrypy.config.update({'log.screen': True})
-        
+
     cherrypy.quickstart(Root(), '/', config=conf)
 
 
