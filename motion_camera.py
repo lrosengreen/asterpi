@@ -51,26 +51,47 @@ class Picture:
         self.timestamp = timestamp
 
 
-
 class RPiCamera:
-    def __init__(self, image_size = (_image_width, _image_height)):
+    def __init__(self, image_size=(_image_width, _image_height)):
         self.image_size = image_size
-        self.image_height = image_height
         self.image_counter = 0
         self.start_time = datetime.datetime.now()
+        # set up the camera (with initial values, run preview, etc.)
+        self.camera = self.start()
+
+    def start(self):
+        camera = picamera.PiCamera()
+        camera.resolution = self.image_size
+        camera.meter_mode = 'average'
+        camera.ISO = 200
+        camera.vflip = True
+        camera.hflip = True
+        # Need to "warm up" the camera for a few seconds before starting to take any picutres
+        # to ensure that it has an accurate exposure reading.
+        camera.start_preview()
+        time.sleep(10)
+        self.running = True
+        return camera
+
+    def stop(self):
+        # When the camera isn't going to be used for a while, turn it off to save power.
+        # (for example when it's too dark outside)
+        self.camera.stop_preview()
+        self.camera.close()
+        self.running = False
 
     def take_picture(self):
-        command = "raspistill -n -mm average -w {} -h {} -ISO 200 -q 100 -t 1000 -e bmp -o -".format(self.image_width, self.image_height)
-        image_data = StringIO.StringIO()
-        image_data.write(subprocess.check_output(command, shell=True))
-        image_data.seek(0)
-        image = Image.open(image_data)
-        image.load()
-        image_data.close()
+        if not self.running: self.start()
+        # Create the in-memory stream
+        stream = io.BytesIO()
+        self.camera.capture(stream, format='jpeg')
+        # "Rewind" the stream to the beginning so we can read its content
+        stream.seek(0)
+        image = Image.open(stream)
         timestamp = datetime.datetime.now()
-        picture = Picture(image, timestamp)
         self.image_counter += 1
-        return picture
+        return (image, timestamp)
+
 
 class DummyCamera:
     def __init__(self, image_size=(_image_width, _image_height)):

@@ -87,6 +87,7 @@ class RPiCamera2:
         camera.meter_mode = 'average'
         camera.ISO = 200
         camera.vflip = True
+        camera.hflip = True
         # Need to "warm up" the camera for a few seconds before starting to take any picutres
         # to ensure that it has an accurate exposure reading.
         camera.start_preview()

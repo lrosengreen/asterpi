@@ -16,7 +16,7 @@ _current_directory = os.path.dirname(os.path.abspath(__file__))
 _preview_directory =  "/mnt/ramdisk/previews"
 _picture_directory = _current_directory + "/pictures"
 _start_time = datetime.datetime.now()
-_timelapse_interval = 120 # how long to wait between taking pictures (in seconds)
+_timelapse_interval = 2 # how long to wait between taking pictures (in seconds)
 
 
 def free_space():
