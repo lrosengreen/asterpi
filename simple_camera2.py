@@ -12,6 +12,9 @@ import picamera
 _current_directory = os.path.dirname(os.path.abspath(__file__))
 _preview_directory =  "/mnt/ramdisk/previews"
 _movie_directory = _current_directory + "/movies"
+_resoultion = (1920, 1080)
+_preview_resolution = (960, 540)
+_framerate = 4 #frames per second
 _start_time = datetime.datetime.now()
 
 
@@ -28,10 +31,10 @@ def run():
         os.makedirs(_movie_directory)
     counter = 1
     with picamera.PiCamera() as camera:
-        camera.resolution = (1920, 1080)
+        camera.resolution = _resolution
         camera.vflip = True
         camera.hflip = True
-        camera.framerate = 4
+        camera.framerate = _framerate
         camera.start_preview()
         try:
             start_time = datetime.datetime.now()
@@ -40,7 +43,7 @@ def run():
             while free_space() > 0.5:
                 timestamp = datetime.datetime.now()
                 camera.capture(os.path.join(_preview_directory, "preview.jpg"),
-                    resize=(960,540),
+                    resize=_preview_resolution,
                     quality=30,
                     use_video_port=True)
                 print("\r{:78}".format(""), end="\r")
