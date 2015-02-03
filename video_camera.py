@@ -20,9 +20,9 @@ _movie_directory = _current_directory + "/movies"
 _resolution = (1920, 1080)
 _preview_resolution = (960, 540)
 _framerate = 4 #frames per second
-_start_time = datetime.time(6)
-_end_time = datetime.time(7)
-_minimum_free_space = 0.5 #free space in GB
+_start_time = datetime.time(7) # start time in hours (24 hr clock)
+_end_time = datetime.time(17) # end time in hours (24hr clock)
+_minimum_free_space = 0.5 #stop if free space gets lower than this in GB
 
 def brightness(image):
     m = numpy.asarray(image)
@@ -54,8 +54,9 @@ def run():
                 camera.annotate_background = True
                 try:
                     start_time = datetime.datetime.now()
-                    camera.start_recording(os.path.join(_movie_directory,
-                        "{}.h264".format(start_time.strftime("%Y%b%d_%H-%M-%S").lower())))
+                    fname = os.path.join(_movie_directory, "{}.h264".format(start_time.strftime("%Y%b%d_%H-%M-%S").lower()))
+                    print("recording to {}".format(fname))
+                    camera.start_recording(fname)
                     while free_space() > _minimum_free_space and now > _start_time and now < _end_time:
                         timestamp = datetime.datetime.now()
                         now = timestamp.time()
